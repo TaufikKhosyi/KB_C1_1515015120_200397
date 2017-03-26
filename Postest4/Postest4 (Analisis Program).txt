@@ -1,0 +1,121 @@
+DOMAINS  /* 2 manfaat utama domain, yaitu pertama, kita dapat memberikan nama yang berarti untuk domain, walaupun secara internal domain tersebut sama tipenya dengan domain yang telah ada; yang kedua, kita dapat mendeklarasi domain khusus yang digunakan untuk mendeklarasikan struktur data yang tidak didefinisikan oleh standar domain. */
+ nama,jender,pekerjaan,benda,alasan,zat = symbol /* ada nama,jender,pekerjaan,benda,alasan,zat yang bertipe data symbol */ 
+ umur=integer /* umur bertipe data integer */
+PREDICATES /* Mendeklarasikan parameter apa saja yang ada pada Predikat */
+ nondeterm orang(nama, umur, jender, pekerjaan) /* terdapat Predikat orang dengan parameter nama,umur,jender,pekerjaan */
+ nondeterm selingkuh(nama, nama) /* terdapat Predikat selingkuh dengan parameter nama,nama */
+ terbunuh_dengan(nama, benda)  terdapat Predikat terbunuh_dengan dengan parameter nama,benda */
+ terbunuh(nama)  /* terdapat Predikat terbunuh dengan parameter nama */
+ nondeterm pembunuh(nama) /* terdapat Predikat pembunuh dengan parameter nama */
+ motif(alasan) /* terdapat Predikat motif dengan parameter alasan */
+ ternodai(nama, zat) /* terdapat Predikat ternodai dengan parameter nama,zat */
+ milik(nama, benda) /* terdapat Predikat milik dengan parameter nama,benda */
+ nondeterm cara_kerja_mirip(benda, benda) /* terdapat Predikat cara_kerja_mirip dengan parameter benda,benda */
+ nondeterm kemungkinan_milik(nama, benda) /* terdapat Predikat kemungkinan_mirip dengan parameter nama,benda */
+ nondeterm dicurigai(nama) /* terdapat Predikat dicurigai dengan parameter nama */
+
+/* * * Fakta-fakta tentang pembunuhan * * */
+CLAUSES  /* untuk meletakkan fakta dan aturan */
+
+ orang(budi,55,m,tukang_kayu). /* Orang dengan nama budi, umur 55 th, jender m, pekerjaan tukang kayu */
+ orang(aldi,25,m,pemain_sepak_bola). /* Orang dengan nama aldi, umur 25 th, jender m, pekerjaan pemain sepak bola */
+ orang(aldi,25,m,tukang_jagal). /* aldi memeiliki 2 pekerjaan, pekerjaan keduanya yaitu tukang jagal */
+ orang(joni,25,m,pencopet). /* Orang dengan nama joni, umur 25 th, jender m, pekerjaan pencopet */
+
+ selingkuh(ina,joni). /* ina selingkuh dengan joni */
+ selingkuh(ina,budi). /* ina juga selingkuh dengan budi */
+ selingkuh(siti,joni). /* siti selingkuh dengan joni */
+ terbunuh_dengan(siti,pentungan). /* siti terbunuh dengan pentungan */
+ terbunuh(siti). /* siti terbunuh */
+ motif(uang). /* motifnya yaitu uang */
+ motif(cemburu). /* motifnya yaitu cemburu */
+ motif(dendam). /* motifnya yaitu dendam */
+ ternodai(budi, darah). /* budi ternodai darah */
+ ternodai(siti, darah). /* siti ternodai darah */
+ ternodai(aldi, lumpur). /* aldi ternodai lumpur */
+ ternodai(joni, coklat). /* joni ternodai coklat */
+ ternodai(ina, coklat). /* ina ternodai coklat */
+ milik(budi,kaki_palsu). /* budi memiliki kaki palsu */
+ milik(joni,pistol). /* joni memiliki pistol */
+/* * * Basis Pengetahuan * * */
+
+ cara_kerja_mirip(kaki_palsu, pentungan). 
+ cara_kerja_mirip(balok, pentungan). 
+ cara_kerja_mirip(gunting, pisau). 
+ cara_kerja_mirip(sepatu_bola, pentungan). 
+
+ kemungkinan_milik(X,sepatu_bola):-
+orang(X,_,_,pemain_sepak_bola).
+
+ kemungkinan_milik(X,gunting):-
+orang(X,_,_,pekerja_salon).
+
+ kemungkinan_milik(X,Benda):-
+milik(X,Benda).
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* dicurigai semua orang yang memiliki senjata yang *
+* kerjanya mirip dengan senjata penyebab siti terbunuh. *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+ dicurigai(X):-
+terbunuh_dengan(siti,Senjata) ,
+cara_kerja_mirip(Benda,Senjata) ,
+kemungkinan_milik(X,Benda).
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * *
+* dicurigai laki-laki yang selingkuh dengan siti. *
+* * * * * * * * * * * * * * * * * * * * * * * * * */
+ dicurigai(X):-
+motif(cemburu),
+orang(X,_,m,_),
+selingkuh(siti,X).
+
+/* * * * * * * * * * * * * * * * * * * * * * *
+* dicurigai perempuan yang selingkuh dengan *
+* laki-laki yang juga selingkuh dengan siti *
+* * * * * * * * * * * * * * * * * * * * * * */ 
+ dicurigai(X):-
+motif(cemburu),
+orang(X,_,f,_),
+selingkuh(X,Lakilaki),
+selingkuh(siti,Lakilaki).
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * *
+* dicurigai pencopet yang mempunyai motif uang. *
+* * * * * * * * * * * * * * * * * * * * * * * * * * */
+ dicurigai(X):-
+motif(uang),
+orang(X,_,_,pencopet).
+
+ pembunuh(Pembunuh):-
+orang(Pembunuh,_,_,_),
+terbunuh(Terbunuh),
+Terbunuh <> Pembunuh, /* Bukan bunuh diri */
+dicurigai(Pembunuh),
+ternodai(Pembunuh,Zat),
+ternodai(Terbunuh,Zat).
+
+GOAL
+ pembunuh(X).
+
+Penjelasan :
+1. Goalnya yaitu predikat pembunuh dengan variabel X. 
+mencari di program di Clausa yang cocok. Ditemukan kecocokan dengan klausa pembunuh(Pembunuh) dan variabel X dicocokkan (unifikasi) dengan variabel Pembunuh.
+2. Memanggil subgoal yang pertama yaitu orang(Pembunuh,_,_,_), mencari pencocokan. Ditemukan pencocokan dengan fakta pertama dari klausa orang. 
+Pada titik ini Pembunuh diikat dengan value budi karena pada subgoal tersebut mengabaikan isinya, Kemudian melakukan titik lacakbalik pada fakta orang(budi,_,_,_).
+3. Kemudian membuat panggilan untuk subgoal yang kedua yaitu terbunuh(Terbunuh), mencari pencocokan, ditemukan dengan fakta yang pertama terbunuh(siti),
+siti terbunuh, dan Prolog melakukan titik lacakbalik pada terbunuh(siti).
+4. Mencoba untuk memenuhi subgoal yang ketiga, Terbunuh <> Pembunuh, mencari pencocokan,
+Karena Terbunuh dengan parameter siti tidak sama dengan Pembunuh dengan parameter budi maka lanjut ke klausa selanjutnya.
+5. Mencoba untuk memenuhi subgoal yang keempat, dicurigai(Pembunuh), mencari pencocokan, Ditemukan pencocokan dengan fakta pertama dari klausa dicurigai(X). 
+dan variabel Pembunuh diunifikasikan dengan variabel X.
+6. Memanggil syarat yang pertama pada rule tersebut yaitu terbunuh_dengan(siti,Senjata), mencari pencocokan, Ditemukan pencocokan dengan fakta pertama dari klausa terbunuh_dengan. 
+Pembunuh diberi nilai dengan parameter pentungan karena fakta pertamanya adalah terbunuh_dengan(siti,pentungan), Kemudian melakukan lacakbalik pada fakta terbunuh_dengan(siti,pentungan).
+7. Memanggil syarat yang kedua pada rule tersebut yaitu cara_kerja_mirip(Benda,Senjata), mencari pencocokan, Ditemukan pencocokan dengan fakta pertama dari klausa cara_kerja_mirip.
+Benda memiliki nilai parameter kaki_palsu, karena fakta pertamanya adalah cara_kerja_mirip(kaki_palsu,pentungan), Kemudian melakukan lacakbalik pada fakta cara_kerja_mirip(kaki_palsu,pentungan).
+8. Memanggil syarat terakhir pada rule tersebut yaitu kemungkinan_milik(X,Benda), mencari pencocokan, nilai dari X adalah budi dan Benda adalah kaki_palsu. 
+klausa ini syaratnya milik(X,Benda), Ditemukan pencocokan dengan fakta pertama milik(budi,kaki_palsu) dan melakukan titik lacak balik.
+9. memenuhi subgoal yang kelima yaitu ternodai(Pembunuh,Zat), dan mencari pencocokan untuk panggilan ini dimana tadi diketahui nilai dari Pembunuh adalah budi. 
+lalu menemukan dengan fakta yang pertama ternodai(budi,darah). lalu Zat mempunyai nilai parameter darah dan melakukan lacakbalik pada ternodai(budi,darah).
+10. Memenuhi subgoal yang kelima yaitu ternodai(Terbunuh,Zat), mencari pencocokan, nilai dari Terbunuh adalah siti dan Zat adalah darah. menemukan kecocokan dengan fakta fakta dan subgoal terakhir berhasil.
+11. rule pembunuh dapat dipenuhi. mengembalikan nilai X pada goal pembunuh(Pembunuh), X dengan nilai Pembunuh dan Pembunuh dengan nilai budi, maka X dengan nilai budi pada goal tersebut.  
