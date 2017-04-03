@@ -1,0 +1,8 @@
+1.) Apa perbedaan data object sederhana dan jamak?
+Jawab:
+
+Data Object Sederhana terbagi menjadi dua bagian yaitu Variabel (setiap penulisan variable harus dengan huruf capital atau dengan sebuah underscore)
+dan Constanta (apapun yang diidentifikasikan sebaagai sebuah object yang nilainya bisa bervariasi). 
+
+Data Object Jamak memperlakukan beberapa informasi sebagai sebuah item tunggal, data object dimulai dengan sebuah nama yang biasa disebut functor yang
+diikuti oleh tiga argumen. Functor tidak melakukan apa-apa, hanya sebuah nama yang mengidentifikasi sebuah jenis data objek jamak yang didalamnya terdapat argument.
