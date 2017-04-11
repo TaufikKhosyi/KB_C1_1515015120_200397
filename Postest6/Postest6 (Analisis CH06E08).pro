@@ -31,4 +31,4 @@ goal
   factorial(3,X). %pada goal, factorial ditentukan nilai 3 pada argumen pertama dan pada argumen keduanya berisi variabel X. nilai X ini yang dicari
 		  %Pertama-tama Visual Prolog mencari fakta dari rule yang cocok dengan goal, lalu ditemukan factorial(N,FactN), selanjutnya mencari pada klausa tersebut untuk mengunifikasi argumennya
 		  %Karna X variabel ini bebas, jadi X dapat diunifikasikan ke variabel manapun, FactN juga merupakan variabel bebas dari rule faktorial, maka dilakukan unifikasi antara X dan factorial, sehingga X=FactN
-		  %dan variabel N diikat dengan nilai 3
+		  %dan variabel N diikat dengan nilai 3, didapatlah X=6
